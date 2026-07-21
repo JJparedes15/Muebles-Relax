@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="muebles a medida, muebles de lujo, catálogo de muebles, muebles relax, diseño de interiores, fabricación de muebles, muebles elegantes">
+    <meta name="robots" content="index, follow">
+    <link rel="icon" href="favicon.jpeg" type="image/jpeg">
+    <title>Relax Furniture Homestore | Catálogo Oficial</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- PapaParse for CSV processing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <style>
+        /* CSS Variables - Dark & Gold Elegant Theme */
+        :root {
+            --bg-main: #0a0a0a;
+            --bg-card: #151515;
+            --bg-hover: #1f1f1f;
+            --gold-primary: #C59B5F; /* Tono cobre/dorado del logo */
+            --gold-hover: #e0b473;
+            --text-light: #f5f5f5;
+            --text-muted: #a0a0a0;
+            --border-color: #333;
+            --transition: all 0.3s ease;
+        }
+
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-light);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            border: none;
+            outline: none;
+            background: none;
+        }
+
+        /* Header & Navigation */
+        .header {
+            background-color: rgba(10, 10, 10, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--gold-primary);
+            display: flex;
+            flex-direction: column;
+            line-height: 1;
+        }
+        .logo span {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        .tools-section {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex: 1;
+            justify-content: center;
+            max-width: 600px;
+            margin: 0 2rem;
+        }
+        .search-bar {
+            flex: 1;
+            position: relative;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border-radius: 25px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            color: var(--text-light);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        .search-bar input:focus {
+            border-color: var(--gold-primary);
+            outline: none;
+        }
+        .search-bar i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .icon-btn {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            position: relative;
+            transition: var(--transition);
+        }
+        .icon-btn:hover, .icon-btn.active {
+            color: var(--gold-primary);
+        }
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background-color: var(--gold-primary);
+            color: var(--bg-main);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 50%;
+        }
+
+        .contact-btn {
+            background-color: transparent;
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .contact-btn:hover {
+            background-color: var(--gold-primary);
+            color: var(--bg-main);
+        }
+
+        /* Navigation Categories (Desktop) */
+        .nav-categories {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            display: none; /* Hidden on mobile by default */
+        }
+        .nav-list {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .nav-item {
+            position: relative;
+            padding: 1rem 1.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .nav-item:hover, .nav-item.active {
+            color: var(--gold-primary);
+            background-color: var(--bg-hover);
+        }
+
+        /* Mobile Hamburger */
+        .mobile-menu-btn {
+            display: none;
+            font-size: 1.5rem;
+            color: var(--gold-primary);
+        }
+
+        /* Carousel Hero Section */
+        .hero-carousel {
+            position: relative;
+            width: 100%;
+            height: 60vh;
+            min-height: 400px;
+            overflow: hidden;
+            background-color: var(--bg-card);
+        }
+        .carousel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+        }
+        .carousel-slide.active {
+            opacity: 1;
+        }
+        .carousel-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(10,10,10,0.3), rgba(10,10,10,0.8));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+        }
+        .carousel-overlay h2 {
+            font-size: 3rem;
+            color: var(--gold-primary);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .carousel-overlay p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Product Grid */
+        .catalog-container {
+            max-width: 1400px;
+            margin: 3rem auto;
+            padding: 0 5%;
+        }
+        .section-title {
+            font-size: 2rem;
+            color: var(--gold-primary);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 2px;
+            background-color: var(--gold-primary);
+            margin: 10px auto 0;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Product Card */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            border-color: var(--gold-primary);
+        }
+        .card-img-container {
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .card:hover .card-img {
+            transform: scale(1.05);
+        }
+        .fav-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(10, 10, 10, 0.7);
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+        }
+        .fav-btn:hover, .fav-btn.favorited {
+            color: var(--gold-primary);
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .card-category {
+            font-size: 0.75rem;
+            color: var(--gold-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.8rem;
+            font-family: 'Playfair Display', serif;
+        }
+        .card-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            flex: 1;
+        }
+        .add-to-cart-btn {
+            width: 100%;
+            background-color: transparent;
+            border: 1px solid var(--text-light);
+            color: var(--text-light);
+            padding: 0.8rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: var(--transition);
+        }
+        .add-to-cart-btn:hover {
+            background-color: var(--gold-primary);
+            border-color: var(--gold-primary);
+            color: var(--bg-main);
+        }
+
+        /* Modals (Cart & Image) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: var(--bg-card);
+            border: 1px solid var(--gold-primary);
+            border-radius: 8px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(-20px);
+            transition: var(--transition);
+        }
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+        }
+        .modal-close:hover {
+            color: var(--gold-primary);
+        }
+        
+        /* Cart Specific */
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .cart-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .cart-item-info {
+            flex: 1;
+        }
+        .cart-item-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .cart-item-cat {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        .remove-item {
+            color: #ff4c4c;
+            font-size: 1.2rem;
+        }
+        .whatsapp-quote-btn {
+            width: 100%;
+            background-color: #25D366; /* WhatsApp Green */
+            color: white;
+            padding: 1rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        .whatsapp-quote-btn:hover {
+            background-color: #1ebd5c;
+        }
+
+        /* Image Lightbox Specific */
+        .lightbox-content {
+            width: 90%;
+            max-width: 900px;
+            background: transparent;
+            border: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        /* Responsive */
+        @media (min-width: 769px) {
+            .nav-categories {
+                display: block;
+            }
+        }
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            .tools-section {
+                order: 3;
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+            }
+            .contact-btn {
+                display: none; /* Hide on mobile to save space, available in menu */
+            }
+            .mobile-menu-btn {
+                display: block;
+            }
+            /* Mobile Nav Dropdown */
+            .nav-categories.mobile-active {
+                display: block;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--bg-card);
+                border-top: 1px solid var(--border-color);
+            }
+            .nav-list {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav-item {
+                width: 100%;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .hero-carousel {
+                height: 40vh;
+            }
+            .carousel-overlay h2 {
+                font-size: 2rem;
+            }
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+            grid-column: 1 / -1;
+        }
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="top-bar">
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Logo -->
+            <div class="logo">
+                Relax
+                <span>Furniture Homestore</span>
+            </div>
+
+            <!-- Search & Actions -->
+            <div class="tools-section">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar muebles, categorías...">
+                </div>
+                
+                <button class="icon-btn" id="favFilterBtn" onclick="toggleFavoritesFilter()" title="Ver Mis Favoritos">
+                    <i class="fas fa-heart"></i>
+                </button>
+                
+                <button class="icon-btn" onclick="openCart()" title="Ver Cotización">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge" id="cartCount">0</span>
+                </button>
+            </div>
+
+            <!-- Contact Button -->
+            <button class="contact-btn" onclick="contactWhatsApp()">
+                <i class="fab fa-whatsapp"></i> Contacto
+            </button>
+        </div>
+
+        <!-- Dynamic Categories Navigation -->
+        <nav class="nav-categories" id="navCategories">
+            <ul class="nav-list" id="categoryList">
+                <li class="nav-item active" onclick="filterByCategory('Todos', this)">Todos</li>
+                <!-- Categories will be injected here -->
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Carousel -->
+    <section class="hero-carousel" id="carousel">
+        <!-- Slides will be injected here -->
+        <div class="carousel-overlay">
+            <h2>Creando Espacios Únicos</h2>
+            <p>Fabricación de muebles a medida con diseño exclusivo y materiales de primera calidad.</p>
+        </div>
+    </section>
+
+    <!-- Product Catalog -->
+    <main class="catalog-container">
+        <h2 class="section-title" id="catalogTitle">Catálogo Completo</h2>
+        <div class="grid" id="productGrid">
+            <!-- Products will be injected here -->
+            <div class="empty-state" id="loadingState">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <p>Cargando catálogo...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Cart / Quote Modal -->
+    <div class="modal-overlay" id="cartModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModals()"><i class="fas fa-times"></i></button>
+            <h3 style="font-family: 'Playfair Display', serif; color: var(--gold-primary); margin-bottom: 1.5rem; font-size: 1.5rem;">
+                Resumen de Productos
+            </h3>
+            <div id="cartItemsList">
+                <!-- Cart items will appear here -->
+            </div>
+            <div id="emptyCartMsg" style="display: none; color: var(--text-muted); text-align: center; padding: 2rem 0;">
+                <p>No has seleccionado ningún mueble.</p>
+            </div>
+            <button class="whatsapp-quote-btn" id="btnQuote" onclick="sendQuoteWhatsApp()">
+                <i class="fab fa-whatsapp"></i> Cotizar por WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <!-- Image Lightbox Modal -->
+    <div class="modal-overlay" id="imageModal" onclick="closeModals(event)">
+        <div class="lightbox-content">
+            <button class="modal-close" style="top: -40px; right: 0; color: white;" onclick="closeModals()"><i class="fas fa-times"></i></button>
+            <img src="" alt="Vista ampliada" class="lightbox-img" id="lightboxImg" onclick="event.stopPropagation()">
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        // CONFIGURATION
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9zXvybMxlnStdH3mnXOCmVvz9NODe4ulcpI1Ic-vat5fJXTS1_uOILbh1FkUe8kfppUXjYdDu49DI/pub?gid=0&single=true&output=csv';
+        const WHATSAPP_NUMBER = '593989720793';
+        
+        // STATE
+        let allProducts = [];
+        let filteredProducts = [];
+        let categories = new Set();
+        let cart = [];
+        // Persist favorites using localStorage, fallback to empty array
+        let favorites = JSON.parse(localStorage.getItem('relax_favorites')) || []; 
+        let showingFavorites = false;
+        let currentCategory = 'Todos';
+        let currentSlide = 0;
+        let slideInterval;
+
+        // INIT
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData();
+            setupEventListeners();
+        });
+
+        // FETCH DATA
+        function fetchData() {
+            Papa.parse(CSV_URL, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    // Filter out rows that might be completely empty but parsed
+                    allProducts = results.data.filter(item => item.Titulo && item.Titulo.trim() !== '');
+                    filteredProducts = [...allProducts];
+                    
+                    extractCategories();
+                    buildNavigation();
+                    buildCarousel();
+                    renderGrid(filteredProducts);
+                },
+                error: function(err) {
+                    document.getElementById('productGrid').innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Error al cargar el catálogo. Por favor, intenta de nuevo más tarde.</p>
+                        </div>`;
+                }
+            });
+        }
+
+        // BUILD UI COMPONENTS
+        function extractCategories() {
+            allProducts.forEach(prod => {
+                if(prod.Categoria) {
+                    categories.add(prod.Categoria.trim());
+                }
+            });
+        }
+
+        function buildNavigation() {
+            const list = document.getElementById('categoryList');
+            categories.forEach(cat => {
+                const li = document.createElement('li');
+                li.className = 'nav-item';
+                li.innerText = cat;
+                li.onclick = function() { filterByCategory(cat, this); };
+                list.appendChild(li);
+            });
+        }
+
+        function buildCarousel() {
+            const carousel = document.getElementById('carousel');
+            // Remove previous slides if any
+            document.querySelectorAll('.carousel-slide').forEach(e => e.remove());
+            
+            // Pick up to 5 random products for the carousel
+            const shuffled = [...allProducts].sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, 5);
+            
+            selected.forEach((prod, index) => {
+                const slide = document.createElement('div');
+                slide.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
+                slide.style.backgroundImage = `url('${prod.Imagen}')`;
+                carousel.insertBefore(slide, carousel.firstChild); // Insert before overlay
+            });
+
+            // Start rotation
+            if(selected.length > 1) {
+                slideInterval = setInterval(rotateCarousel, 5000);
+            }
+        }
+
+        function rotateCarousel() {
+            const slides = document.querySelectorAll('.carousel-slide');
+            if(slides.length === 0) return;
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+
+        function renderGrid(products) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+
+            if (products.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>No se encontraron muebles con esos criterios.</p>
+                    </div>`;
+                return;
+            }
+
+            products.forEach(prod => {
+                const isFav = favorites.includes(prod.Titulo);
+
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'card-img-container';
+
+                const img = document.createElement('img');
+                img.className = 'card-img';
+                img.src = prod.Imagen;
+                img.alt = prod.Titulo || 'Imagen de mueble';
+                img.onerror = function() {
+                    this.src = 'https://via.placeholder.com/400x300?text=Imagen+No+Disponible';
+                };
+
+                const favBtn = document.createElement('button');
+                favBtn.type = 'button';
+                favBtn.className = `fav-btn ${isFav ? 'favorited' : ''}`;
+                favBtn.title = 'Añadir a favoritos';
+
+                const favIcon = document.createElement('i');
+                favIcon.className = `${isFav ? 'fas' : 'far'} fa-heart`;
+                favBtn.appendChild(favIcon);
+
+                imgContainer.appendChild(img);
+                imgContainer.appendChild(favBtn);
+
+                const cardContent = document.createElement('div');
+                cardContent.className = 'card-content';
+
+                const category = document.createElement('span');
+                category.className = 'card-category';
+                category.textContent = prod.Categoria || '';
+
+                const title = document.createElement('h3');
+                title.className = 'card-title';
+                title.textContent = prod.Titulo;
+
+                const desc = document.createElement('p');
+                desc.className = 'card-desc';
+                desc.textContent = prod.Descripcion || 'Diseño exclusivo a medida.';
+
+                const addBtn = document.createElement('button');
+                addBtn.type = 'button';
+                addBtn.className = 'add-to-cart-btn';
+                addBtn.textContent = 'Agregar al carrito';
+
+                cardContent.appendChild(category);
+                cardContent.appendChild(title);
+                cardContent.appendChild(desc);
+                cardContent.appendChild(addBtn);
+
+                card.appendChild(imgContainer);
+                card.appendChild(cardContent);
+                grid.appendChild(card);
+
+                imgContainer.addEventListener('click', () => openImageLightBox(prod.Imagen));
+                favBtn.addEventListener('click', (e) => toggleFavorite(e, prod.Titulo));
+                addBtn.addEventListener('click', (e) => addToCart(e, prod.Titulo, prod.Categoria, prod.Imagen));
+            });
+        }
+
+        // INTERACTIONS & LOGIC
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                applyFilters(term, currentCategory, showingFavorites);
+            });
+        }
+
+        function filterByCategory(cat, element) {
+            // Update active styling
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            
+            currentCategory = cat;
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            applyFilters(term, currentCategory, showingFavorites);
+            
+            // Close mobile menu if open
+            document.getElementById('navCategories').classList.remove('mobile-active');
+            
+            // Update Title
+            document.getElementById('catalogTitle').innerText = cat === 'Todos' ? 'Catálogo Completo' : cat;
+            
+            // Scroll to grid smoothly
+            document.getElementById('catalogTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function toggleFavoritesFilter() {
+            showingFavorites = !showingFavorites;
+            const btn = document.getElementById('favFilterBtn');
+            if (showingFavorites) {
+                btn.classList.add('active');
+                document.getElementById('catalogTitle').innerText = 'Mis Favoritos';
+            } else {
+                btn.classList.remove('active');
+                document.getElementById('catalogTitle').innerText = currentCategory === 'Todos' ? 'Catálogo Completo' : currentCategory;
+            }
+            
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            applyFilters(term, currentCategory, showingFavorites);
+        }
+
+        function applyFilters(searchTerm, category, favOnly) {
+            filteredProducts = allProducts.filter(prod => {
+                const matchesSearch = prod.Titulo.toLowerCase().includes(searchTerm) || 
+                                      (prod.Descripcion && prod.Descripcion.toLowerCase().includes(searchTerm));
+                const matchesCat = category === 'Todos' || prod.Categoria === category;
+                const matchesFav = !favOnly || favorites.includes(prod.Titulo);
+                
+                return matchesSearch && matchesCat && matchesFav;
+            });
+            renderGrid(filteredProducts);
+        }
+
+        function toggleFavorite(event, titulo) {
+            event.stopPropagation(); // Prevent opening image modal
+            const btn = event.currentTarget;
+            const icon = btn.querySelector('i');
+            
+            const index = favorites.indexOf(titulo);
+            if (index > -1) {
+                // Remove
+                favorites.splice(index, 1);
+                btn.classList.remove('favorited');
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+            } else {
+                // Add
+                favorites.push(titulo);
+                btn.classList.add('favorited');
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            }
+            
+            // Persist
+            localStorage.setItem('relax_favorites', JSON.stringify(favorites));
+            
+            // If currently filtering by favorites, re-render to remove un-favorited items
+            if (showingFavorites) {
+                const term = document.getElementById('searchInput').value.toLowerCase();
+                applyFilters(term, currentCategory, showingFavorites);
+            }
+        }
+
+        // CART LOGIC
+        function addToCart(event, titulo, categoria, imagen) {
+            // Check if already in cart
+            if (!cart.some(item => item.titulo === titulo)) {
+                cart.push({ titulo, categoria, imagen });
+                updateCartBadge();
+                
+                // Visual feedback (optional simple toast effect on button)
+                const btn = event.currentTarget;
+                const originalText = btn.innerText;
+                btn.innerText = "¡Agregado!";
+                btn.style.backgroundColor = "var(--gold-primary)";
+                btn.style.color = "var(--bg-main)";
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = "transparent";
+                    btn.style.color = "var(--text-light)";
+                }, 1500);
+            }
+        }
+
+        function removeFromCart(titulo) {
+            cart = cart.filter(item => item.titulo !== titulo);
+            updateCartBadge();
+            renderCartModal();
+        }
+
+        function updateCartBadge() {
+            document.getElementById('cartCount').innerText = cart.length;
+        }
+
+        // MODALS & WHATSAPP
+        function openCart() {
+            renderCartModal();
+            document.getElementById('cartModal').classList.add('active');
+        }
+
+        function renderCartModal() {
+            const list = document.getElementById('cartItemsList');
+            const emptyMsg = document.getElementById('emptyCartMsg');
+            const btnQuote = document.getElementById('btnQuote');
+            
+            list.innerHTML = '';
+            
+            if (cart.length === 0) {
+                emptyMsg.style.display = 'block';
+                btnQuote.style.display = 'none';
+            } else {
+                emptyMsg.style.display = 'none';
+                btnQuote.style.display = 'flex';
+                
+                cart.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'cart-item';
+                    div.innerHTML = `
+                        <img src="${item.imagen}" alt="${item.titulo}" onerror="this.src='https://via.placeholder.com/60'">
+                        <div class="cart-item-info">
+                            <div class="cart-item-title">${item.titulo}</div>
+                            <div class="cart-item-cat">${item.categoria}</div>
+                        </div>
+                        <button class="remove-item" onclick="removeFromCart('${item.titulo}')" title="Eliminar">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    `;
+                    list.appendChild(div);
+                });
+            }
+        }
+
+        function openImageLightBox(imgSrc) {
+            document.getElementById('lightboxImg').src = imgSrc;
+            document.getElementById('imageModal').classList.add('active');
+        }
+
+        function closeModals(event) {
+            // Close if clicking outside the content box, or directly on the close button
+            if (!event || event.target.classList.contains('modal-overlay') || event.target.closest('.modal-close')) {
+                document.getElementById('cartModal').classList.remove('active');
+                document.getElementById('imageModal').classList.remove('active');
+            }
+        }
+
+        function sendQuoteWhatsApp() {
+            if (cart.length === 0) return;
+            
+            let message = "Hola, me interesa solicitar Info de los siguientes muebles:%0A%0A";
+            cart.forEach((item, index) => {
+                message += `${index + 1}. ${item.titulo} (${item.categoria})%0A`;
+            });
+            message += "%0A Ayúdenme con una cotización";
+            
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
+        }
+
+        function contactWhatsApp() {
+            const message = "Hola Muebles Relax, deseo realizar una consulta general sobre sus servicios de fabricación de muebles.";
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('navCategories').classList.toggle('mobile-active');
+        }
+    </script>
+</body>
+</html>
