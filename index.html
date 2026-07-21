@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="Huambalo, Muebles Huambalo, Relax, Muebles Relax, Reclinable, Sofa, Sofa Relax, Sofa reclinable, Muebles de calidad">
+    <meta name="keywords" content="muebles a medida, muebles de lujo, catálogo de muebles, muebles relax, diseño de interiores, fabricación de muebles, muebles elegantes">
     <meta name="robots" content="index, follow">
     <link rel="icon" href="favicon.jpeg" type="image/jpeg">
     <title>Relax Furniture Homestore | Catálogo Oficial</title>
@@ -80,16 +80,30 @@
             margin: 0 auto;
         }
         .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            min-width: 0;
+            margin-left: -0.4rem;
+        }
+        .logo img {
+            max-height: 40px;
+            width: auto;
+            object-fit: contain;
+            display: block;
+            flex-shrink: 0;
+        }
+        .logo-text {
             font-family: 'Playfair Display', serif;
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: var(--gold-primary);
             display: flex;
             flex-direction: column;
             line-height: 1;
         }
-        .logo span {
+        .logo-text span {
             font-family: 'Montserrat', sans-serif;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             letter-spacing: 2px;
             color: var(--text-muted);
             margin-top: 4px;
@@ -597,10 +611,13 @@
             </button>
 
             <!-- Logo -->
-            <div class="logo">
-                Relax
-                <span>Furniture Homestore</span>
-            </div>
+            <a href="#" class="logo" aria-label="Inicio">
+                <img src="logo.jpeg" alt="Relax Furniture Homestore">
+                <div class="logo-text">
+                    Relax
+                    <span>Furniture Homestore</span>
+                </div>
+            </a>
 
             <!-- Search & Actions -->
             <div class="tools-section">
