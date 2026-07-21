@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="muebles a medida, muebles de lujo, catálogo de muebles, muebles relax, diseño de interiores, fabricación de muebles, muebles elegantes">
+    <meta name="keywords" content="Huambalo, Muebles Huambalo, Relax, Muebles Relax, Reclinable, Sofa, Sofa Relax, Sofa reclinable, Muebles de calidad">
     <meta name="robots" content="index, follow">
     <link rel="icon" href="favicon.jpeg" type="image/jpeg">
     <title>Relax Furniture Homestore | Catálogo Oficial</title>
@@ -251,6 +251,40 @@
             font-size: 1.2rem;
             max-width: 600px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        .carousel-controls {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            transform: translateY(-50%);
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1rem;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .carousel-control {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            pointer-events: auto;
+            transition: var(--transition);
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+        }
+        .carousel-control:hover {
+            color: var(--gold-primary);
+            transform: scale(1.08);
+        }
+        .carousel-control:active {
+            transform: scale(0.95);
         }
 
         /* Product Grid */
@@ -602,6 +636,14 @@
 
     <!-- Hero Carousel -->
     <section class="hero-carousel" id="carousel">
+        <div class="carousel-controls" aria-label="Controles del carrusel">
+            <button class="carousel-control" onclick="prevCarousel()" title="Anterior">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="carousel-control" onclick="nextCarousel()" title="Siguiente">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
         <!-- Slides will be injected here -->
         <div class="carousel-overlay">
             <h2>Creando Espacios Únicos</h2>
@@ -719,6 +761,8 @@
         }
 
         function buildCarousel() {
+            clearInterval(slideInterval);
+            currentSlide = 0;
             const carousel = document.getElementById('carousel');
             // Remove previous slides if any
             document.querySelectorAll('.carousel-slide').forEach(e => e.remove());
@@ -740,12 +784,35 @@
             }
         }
 
-        function rotateCarousel() {
+        function showSlide(index) {
             const slides = document.querySelectorAll('.carousel-slide');
             if(slides.length === 0) return;
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide + 1) % slides.length;
+
+            slides[currentSlide]?.classList.remove('active');
+            currentSlide = (index + slides.length) % slides.length;
             slides[currentSlide].classList.add('active');
+        }
+
+        function rotateCarousel() {
+            showSlide(currentSlide + 1);
+        }
+
+        function nextCarousel() {
+            showSlide(currentSlide + 1);
+            resetCarouselInterval();
+        }
+
+        function prevCarousel() {
+            showSlide(currentSlide - 1);
+            resetCarouselInterval();
+        }
+
+        function resetCarouselInterval() {
+            clearInterval(slideInterval);
+            const slides = document.querySelectorAll('.carousel-slide');
+            if(slides.length > 1) {
+                slideInterval = setInterval(rotateCarousel, 5000);
+            }
         }
 
         function renderGrid(products) {
