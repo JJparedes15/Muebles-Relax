@@ -716,6 +716,7 @@
         // STATE
         let allProducts = [];
         let filteredProducts = [];
+        let carouselProducts = [];
         let categories = new Set();
         let cart = [];
         // Persist favorites using localStorage, fallback to empty array
@@ -724,6 +725,7 @@
         let currentCategory = 'Todos';
         let currentSlide = 0;
         let slideInterval;
+        let searchDebounceTimer;
 
         // INIT
         document.addEventListener('DOMContentLoaded', () => {
@@ -741,6 +743,7 @@
                     // Filter out rows that might be completely empty but parsed
                     allProducts = results.data.filter(item => item.Titulo && item.Titulo.trim() !== '');
                     filteredProducts = [...allProducts];
+                    carouselProducts = allProducts.filter(isCarouselProduct);
                     
                     extractCategories();
                     buildNavigation();
@@ -777,26 +780,39 @@
             });
         }
 
+        function getProductFieldValue(prod, fieldName) {
+            const normalizedField = fieldName.toLowerCase();
+            const foundKey = Object.keys(prod).find(key => key.toLowerCase() === normalizedField);
+            return foundKey ? prod[foundKey] : '';
+        }
+
+        function isCarouselProduct(prod) {
+            const value = getProductFieldValue(prod, 'Carrusel');
+            const normalizedValue = String(value ?? '').trim().toLowerCase();
+
+            return normalizedValue === 'si' || normalizedValue === 'sí';
+        }
+
         function buildCarousel() {
             clearInterval(slideInterval);
             currentSlide = 0;
             const carousel = document.getElementById('carousel');
             // Remove previous slides if any
             document.querySelectorAll('.carousel-slide').forEach(e => e.remove());
-            
-            // Pick up to 5 random products for the carousel
-            const shuffled = [...allProducts].sort(() => 0.5 - Math.random());
-            const selected = shuffled.slice(0, 5);
-            
-            selected.forEach((prod, index) => {
+
+            const fragment = document.createDocumentFragment();
+
+            carouselProducts.forEach((prod, index) => {
                 const slide = document.createElement('div');
                 slide.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
                 slide.style.backgroundImage = `url('${prod.Imagen}')`;
-                carousel.insertBefore(slide, carousel.firstChild); // Insert before overlay
+                fragment.appendChild(slide);
             });
 
+            carousel.appendChild(fragment);
+
             // Start rotation
-            if(selected.length > 1) {
+            if(carouselProducts.length > 1) {
                 slideInterval = setInterval(rotateCarousel, 5000);
             }
         }
@@ -834,6 +850,7 @@
 
         function renderGrid(products) {
             const grid = document.getElementById('productGrid');
+            const fragment = document.createDocumentFragment();
             grid.innerHTML = '';
 
             if (products.length === 0) {
@@ -856,6 +873,8 @@
 
                 const img = document.createElement('img');
                 img.className = 'card-img';
+                img.loading = 'lazy';
+                img.decoding = 'async';
                 img.src = prod.Imagen;
                 img.alt = prod.Titulo || 'Imagen de mueble';
                 img.onerror = function() {
@@ -901,19 +920,24 @@
 
                 card.appendChild(imgContainer);
                 card.appendChild(cardContent);
-                grid.appendChild(card);
+                fragment.appendChild(card);
 
                 imgContainer.addEventListener('click', () => openImageLightBox(prod.Imagen));
                 favBtn.addEventListener('click', (e) => toggleFavorite(e, prod.Titulo));
                 addBtn.addEventListener('click', (e) => addToCart(e, prod.Titulo, prod.Categoria, prod.Imagen));
             });
+
+            grid.appendChild(fragment);
         }
 
         // INTERACTIONS & LOGIC
         function setupEventListeners() {
             document.getElementById('searchInput').addEventListener('input', (e) => {
-                const term = e.target.value.toLowerCase();
-                applyFilters(term, currentCategory, showingFavorites);
+                clearTimeout(searchDebounceTimer);
+                searchDebounceTimer = setTimeout(() => {
+                    const term = e.target.value.toLowerCase();
+                    applyFilters(term, currentCategory, showingFavorites);
+                }, 120);
             });
         }
 
