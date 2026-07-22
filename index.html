@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="Huambalo, Muebles Huambalo, Relax, Muebles Relax, Reclinable, Sofa, Sofa Relax, Sofa reclinable, Muebles de calidad">
     <meta name="keywords" content="muebles a medida, muebles de lujo, catálogo de muebles, muebles relax, diseño de interiores, fabricación de muebles, muebles elegantes">
     <meta name="robots" content="index, follow">
     <link rel="icon" href="favicon.jpeg" type="image/jpeg">
     <title>Relax Furniture Homestore | Catálogo Oficial</title>
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
+
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- PapaParse for CSV processing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
@@ -95,20 +96,22 @@
         }
         .logo-text {
             font-family: 'Playfair Display', serif;
+            font-size: 2rem;
             font-size: 1.8rem;
             color: var(--gold-primary);
             display: flex;
             flex-direction: column;
             line-height: 1;
         }
-        .logo-text span {
+        .logo span, .logo-text span {
             font-family: 'Montserrat', sans-serif;
+            font-size: 0.7rem;
             font-size: 0.65rem;
             letter-spacing: 2px;
             color: var(--text-muted);
             margin-top: 4px;
         }
-        
+
         .tools-section {
             display: flex;
             align-items: center;
@@ -321,7 +324,7 @@
             background-color: var(--gold-primary);
             margin: 10px auto 0;
         }
-        
+
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -379,7 +382,7 @@
         .fav-btn:hover, .fav-btn.favorited {
             color: var(--gold-primary);
         }
-        
+
         .card-content {
             padding: 1.5rem;
             display: flex;
@@ -470,7 +473,7 @@
         .modal-close:hover {
             color: var(--gold-primary);
         }
-        
+
         /* Cart Specific */
         .cart-item {
             display: flex;
@@ -585,7 +588,7 @@
                 font-size: 2rem;
             }
         }
-        
+
         /* Empty State */
         .empty-state {
             text-align: center;
@@ -625,11 +628,11 @@
                     <i class="fas fa-search"></i>
                     <input type="text" id="searchInput" placeholder="Buscar muebles, categorías...">
                 </div>
-                
+
                 <button class="icon-btn" id="favFilterBtn" onclick="toggleFavoritesFilter()" title="Ver Mis Favoritos">
                     <i class="fas fa-heart"></i>
                 </button>
-                
+
                 <button class="icon-btn" onclick="openCart()" title="Ver Cotización">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="badge" id="cartCount">0</span>
@@ -712,11 +715,10 @@
         // CONFIGURATION
         const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9zXvybMxlnStdH3mnXOCmVvz9NODe4ulcpI1Ic-vat5fJXTS1_uOILbh1FkUe8kfppUXjYdDu49DI/pub?gid=0&single=true&output=csv';
         const WHATSAPP_NUMBER = '593989720793';
-        
+
         // STATE
         let allProducts = [];
         let filteredProducts = [];
-        let carouselProducts = [];
         let categories = new Set();
         let cart = [];
         // Persist favorites using localStorage, fallback to empty array
@@ -725,7 +727,6 @@
         let currentCategory = 'Todos';
         let currentSlide = 0;
         let slideInterval;
-        let searchDebounceTimer;
 
         // INIT
         document.addEventListener('DOMContentLoaded', () => {
@@ -743,8 +744,7 @@
                     // Filter out rows that might be completely empty but parsed
                     allProducts = results.data.filter(item => item.Titulo && item.Titulo.trim() !== '');
                     filteredProducts = [...allProducts];
-                    carouselProducts = allProducts.filter(isCarouselProduct);
-                    
+
                     extractCategories();
                     buildNavigation();
                     buildCarousel();
@@ -780,19 +780,6 @@
             });
         }
 
-        function getProductFieldValue(prod, fieldName) {
-            const normalizedField = fieldName.toLowerCase();
-            const foundKey = Object.keys(prod).find(key => key.toLowerCase() === normalizedField);
-            return foundKey ? prod[foundKey] : '';
-        }
-
-        function isCarouselProduct(prod) {
-            const value = getProductFieldValue(prod, 'Carrusel');
-            const normalizedValue = String(value ?? '').trim().toLowerCase();
-
-            return normalizedValue === 'si' || normalizedValue === 'sí';
-        }
-
         function buildCarousel() {
             clearInterval(slideInterval);
             currentSlide = 0;
@@ -800,19 +787,23 @@
             // Remove previous slides if any
             document.querySelectorAll('.carousel-slide').forEach(e => e.remove());
 
-            const fragment = document.createDocumentFragment();
+            // Filter products marked for carousel (Carrusel = "Si")
+            const selected = allProducts.filter(prod => 
+                prod.Carrusel && prod.Carrusel.trim().toLowerCase() === 'si'
+            );
 
-            carouselProducts.forEach((prod, index) => {
+            // Fallback: if no products marked for carousel, show all products
+            const slideProducts = selected.length > 0 ? selected : allProducts;
+
+            slideProducts.forEach((prod, index) => {
                 const slide = document.createElement('div');
                 slide.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
                 slide.style.backgroundImage = `url('${prod.Imagen}')`;
-                fragment.appendChild(slide);
+                carousel.insertBefore(slide, carousel.firstChild); // Insert before overlay
             });
 
-            carousel.appendChild(fragment);
-
             // Start rotation
-            if(carouselProducts.length > 1) {
+            if(slideProducts.length > 1) {
                 slideInterval = setInterval(rotateCarousel, 5000);
             }
         }
@@ -850,7 +841,6 @@
 
         function renderGrid(products) {
             const grid = document.getElementById('productGrid');
-            const fragment = document.createDocumentFragment();
             grid.innerHTML = '';
 
             if (products.length === 0) {
@@ -863,7 +853,8 @@
             }
 
             products.forEach(prod => {
-                const isFav = favorites.includes(prod.Titulo);
+                const prodTitle = (prod.Titulo || '').trim();
+                const isFav = favorites.some(fav => (fav || '').trim() === prodTitle);
 
                 const card = document.createElement('div');
                 card.className = 'card';
@@ -873,8 +864,6 @@
 
                 const img = document.createElement('img');
                 img.className = 'card-img';
-                img.loading = 'lazy';
-                img.decoding = 'async';
                 img.src = prod.Imagen;
                 img.alt = prod.Titulo || 'Imagen de mueble';
                 img.onerror = function() {
@@ -920,24 +909,19 @@
 
                 card.appendChild(imgContainer);
                 card.appendChild(cardContent);
-                fragment.appendChild(card);
+                grid.appendChild(card);
 
                 imgContainer.addEventListener('click', () => openImageLightBox(prod.Imagen));
-                favBtn.addEventListener('click', (e) => toggleFavorite(e, prod.Titulo));
+                favBtn.addEventListener('click', (e) => toggleFavorite(e, prodTitle));
                 addBtn.addEventListener('click', (e) => addToCart(e, prod.Titulo, prod.Categoria, prod.Imagen));
             });
-
-            grid.appendChild(fragment);
         }
 
         // INTERACTIONS & LOGIC
         function setupEventListeners() {
             document.getElementById('searchInput').addEventListener('input', (e) => {
-                clearTimeout(searchDebounceTimer);
-                searchDebounceTimer = setTimeout(() => {
-                    const term = e.target.value.toLowerCase();
-                    applyFilters(term, currentCategory, showingFavorites);
-                }, 120);
+                const term = e.target.value.toLowerCase();
+                applyFilters(term, currentCategory, showingFavorites);
             });
         }
 
@@ -945,17 +929,17 @@
             // Update active styling
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
-            
+
             currentCategory = cat;
             const term = document.getElementById('searchInput').value.toLowerCase();
             applyFilters(term, currentCategory, showingFavorites);
-            
+
             // Close mobile menu if open
             document.getElementById('navCategories').classList.remove('mobile-active');
-            
+
             // Update Title
             document.getElementById('catalogTitle').innerText = cat === 'Todos' ? 'Catálogo Completo' : cat;
-            
+
             // Scroll to grid smoothly
             document.getElementById('catalogTitle').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -970,18 +954,19 @@
                 btn.classList.remove('active');
                 document.getElementById('catalogTitle').innerText = currentCategory === 'Todos' ? 'Catálogo Completo' : currentCategory;
             }
-            
+
             const term = document.getElementById('searchInput').value.toLowerCase();
             applyFilters(term, currentCategory, showingFavorites);
         }
 
         function applyFilters(searchTerm, category, favOnly) {
             filteredProducts = allProducts.filter(prod => {
-                const matchesSearch = prod.Titulo.toLowerCase().includes(searchTerm) || 
+                const prodTitle = (prod.Titulo || '').trim();
+                const matchesSearch = prodTitle.toLowerCase().includes(searchTerm) || 
                                       (prod.Descripcion && prod.Descripcion.toLowerCase().includes(searchTerm));
                 const matchesCat = category === 'Todos' || prod.Categoria === category;
-                const matchesFav = !favOnly || favorites.includes(prod.Titulo);
-                
+                const matchesFav = !favOnly || favorites.some(fav => (fav || '').trim() === prodTitle);
+
                 return matchesSearch && matchesCat && matchesFav;
             });
             renderGrid(filteredProducts);
@@ -989,32 +974,26 @@
 
         function toggleFavorite(event, titulo) {
             event.stopPropagation(); // Prevent opening image modal
-            const btn = event.currentTarget;
-            const icon = btn.querySelector('i');
             
-            const index = favorites.indexOf(titulo);
+            // Ensure titulo is trimmed for consistent comparison
+            titulo = titulo ? titulo.trim() : '';
+            if (!titulo) return;
+
+            const index = favorites.findIndex(fav => (fav || '').trim() === titulo);
             if (index > -1) {
                 // Remove
                 favorites.splice(index, 1);
-                btn.classList.remove('favorited');
-                icon.classList.remove('fas');
-                icon.classList.add('far');
             } else {
                 // Add
                 favorites.push(titulo);
-                btn.classList.add('favorited');
-                icon.classList.remove('far');
-                icon.classList.add('fas');
             }
-            
+
             // Persist
             localStorage.setItem('relax_favorites', JSON.stringify(favorites));
-            
-            // If currently filtering by favorites, re-render to remove un-favorited items
-            if (showingFavorites) {
-                const term = document.getElementById('searchInput').value.toLowerCase();
-                applyFilters(term, currentCategory, showingFavorites);
-            }
+
+            // Always re-render to keep UI in sync
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            applyFilters(term, currentCategory, showingFavorites);
         }
 
         // CART LOGIC
@@ -1023,7 +1002,7 @@
             if (!cart.some(item => item.titulo === titulo)) {
                 cart.push({ titulo, categoria, imagen });
                 updateCartBadge();
-                
+
                 // Visual feedback (optional simple toast effect on button)
                 const btn = event.currentTarget;
                 const originalText = btn.innerText;
@@ -1058,16 +1037,16 @@
             const list = document.getElementById('cartItemsList');
             const emptyMsg = document.getElementById('emptyCartMsg');
             const btnQuote = document.getElementById('btnQuote');
-            
+
             list.innerHTML = '';
-            
+
             if (cart.length === 0) {
                 emptyMsg.style.display = 'block';
                 btnQuote.style.display = 'none';
             } else {
                 emptyMsg.style.display = 'none';
                 btnQuote.style.display = 'flex';
-                
+
                 cart.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'cart-item';
@@ -1101,13 +1080,13 @@
 
         function sendQuoteWhatsApp() {
             if (cart.length === 0) return;
-            
+
             let message = "Hola, me interesa solicitar Info de los siguientes muebles:%0A%0A";
             cart.forEach((item, index) => {
                 message += `${index + 1}. ${item.titulo} (${item.categoria})%0A`;
             });
             message += "%0A Ayúdenme con una cotización";
-            
+
             window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
         }
 
